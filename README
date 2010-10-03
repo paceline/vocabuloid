@@ -2,4 +2,6 @@ Vocabuloid is a simple flash card application for Android-based mobile phones. I
 
 It uses the signpost library for OAuth. You need signpost-core and signpost-commonshttp4 for compilation to work. Both jars are available at http://code.google.com/p/oauth-signpost/downloads/list
 
+If you're just looking for a binary to install on your Android 2.x phone: The latest build is available under Downloads.
+
 Ulf (hello@ufmoehring.net)
