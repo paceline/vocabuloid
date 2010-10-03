@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vocabuloid</string>
+    <string name="sign_in">Add login</string>
+	<string name="sign_out">Remove login</string>
+	<string name="quit">Exit</string>
+    <string name="message_signed_out">You\'re now signed out.</string>
+    <string name="message_signed_in">You\'re now signed in.</string>
+    <string name="message_no_translations">Seems like have no translation for this one. Sorry.</string>
+    <string name="message_no_vocabularies">Sorry. This list is either empty or a (currently unsupported) verb list.</string>
+</resources>

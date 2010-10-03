@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="base_url">http://tuvocabulario.com</string>
+	<string name="request_token">/oauth/request_token</string>
+	<string name="access_token">/oauth/access_token</string>
+	<string name="authorize">/oauth/authorize</string>
+	<string name="consumer_key">JjafldQUTVgpgmgPuSOL</string>
+	<string name="consumer_secret">TR8xPfVeumDub3DGRiH5Kl12PUACOT0CutHcfzC3</string>
+</resources>

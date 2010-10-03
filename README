@@ -1,0 +1,5 @@
+Vocabuloid is a simple flash card application for Android-based mobile phones. It uses the http://tuvocabulario.com service as JSON data back end.
+
+It uses the signpost library for OAuth. You need signpost-core and signpost-commonshttp4 for compilation to work. Both jars are available at http://code.google.com/p/oauth-signpost/downloads/list
+
+Ulf (hello@ufmoehring.net)

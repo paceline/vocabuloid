@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+	<ListView android:id="@+id/android:list"
+		android:divider="#FFF"
+		android:dividerHeight="7dp"
+		android:layout_margin="7dp"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent">
+	</ListView>
+	<TextView android:id="@+id/android:empty"
+		style="@style/CodeFont"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:text="No lists available. This could be could be because\n\na.) You\'re not online\n\nb.) You\'re not signed in\n\nc.) You don\'t have any lists at tuvocabulario.com">
+	</TextView>
+</LinearLayout>
