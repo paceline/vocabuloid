@@ -3,13 +3,15 @@ package com.tuvocabulario.vocabuloid;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 
-import com.tuvocabulario.vocabuloid.R;
+import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +32,8 @@ import android.widget.AdapterView.OnItemClickListener;
  */
 public class Vocabuloid extends ListActivity {
 	
+	/** Name for progress dialog shown when loading vocabularies */
+	public static final int DIALOG_LOADING_LISTS = 0;
 	/** Identifier for flash card sub-activity */
 	private static final int FLASHCARD = 0;
 	/** Name of application-wide preference store (used mainly for OAuth data) */
@@ -44,6 +48,9 @@ public class Vocabuloid extends ListActivity {
 	private User mUser;
 	/** Global ArrayAdapter object for handling the list of vocabulary lists */
 	private ArrayAdapter<String> mAdapter;
+	/** Progress dialog object */
+	ProgressDialog mProgressDialog;
+	String[] data;
 	
 	/** 
      * Called when the activity is first created.
@@ -91,6 +98,27 @@ public class Vocabuloid extends ListActivity {
     }
     
     /** 
+     * Called by {@link LoadVocabularies LoadVocabularies} task when it starts loading vocabularies. Configures
+     * and constructs a {@link Dialog ProgressDialog}.
+     *
+     * @param id Unique name of the dialog (used as reference)
+     */
+    @Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+			case DIALOG_LOADING_LISTS:
+				mProgressDialog = new ProgressDialog(this);
+				mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				mProgressDialog.setMessage("Loading your lists...");
+				mProgressDialog.setCancelable(false);
+				mProgressDialog.show();
+				return mProgressDialog;
+			default:
+				return null;
+		}
+	}
+    
+    /** 
      * Called when user hits the phone's menu button. Basically displays menu/options.xml
      *
      * @param Menu Default menu information (inherited)
@@ -109,19 +137,25 @@ public class Vocabuloid extends ListActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        	case R.id.sign_in:
-        		signIn();
-        		return true;
-        	case R.id.sign_out:
-        		signOut();
-        		return true;
-        	case R.id.quit:
-        		finish();
-        		return true;
-        	default:
-        		return super.onContextItemSelected(item);
-        }
+    	if (isOnline()) {
+    		switch (item.getItemId()) {
+        		case R.id.sign_in:
+        			signIn();
+        			return true;
+        		case R.id.sign_out:
+        			signOut();
+        			return true;
+        		case R.id.quit:
+        			finish();
+        			return true;
+        		default:
+        			return super.onContextItemSelected(item);
+    		}
+    	}
+    	else {
+    		toast(R.string.message_offline);
+    		return false;
+    	}
     }
     
     /** 
@@ -149,15 +183,15 @@ public class Vocabuloid extends ListActivity {
      * {@link VocabularyList VocabularyLists}
      */
     private void initializeAdapter() {
-    	String[] data = new String[] { };
-        if (isOnline() && mSettings.contains("accessToken") && mSettings.contains("accessSecret")) {
+    	if (isOnline() && mSettings.contains("accessToken") && mSettings.contains("accessSecret")) {
         	mUser = new User(this);
-        	mUser.getRemoteData();
-        	data = mUser.getListsAsStrings();
+        	new LoadLists().execute(mUser);
         }
-        mAdapter = new ArrayAdapter<String>(this, R.layout.row, data);
-        setListAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
+    	else {
+    		mAdapter = new ArrayAdapter<String>(getBaseContext(), R.layout.row, new String[0]);
+	        setListAdapter(mAdapter);
+	        mAdapter.notifyDataSetChanged();
+    	}
     }
     
     /** 
@@ -216,4 +250,49 @@ public class Vocabuloid extends ListActivity {
     	ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
     	return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
+    
+    /**
+     * Asynchronous task used by {@link Vocabuloid Vocabuloid} to execute the lengthy task of loading lists
+     * from tuvocabulario.com
+     *
+     * @author Ulf Mšhring
+     * @version 0.1
+     */
+ 	class LoadLists extends AsyncTask<User, Void, String[]> {
+
+ 		/** Set up {@link ProgressDialog ProgressDialog} before executing self  */
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			showDialog(DIALOG_LOADING_LISTS);
+		}
+		
+		/** 
+	     * Main method: Load {@link VocabularyList VocabularyLists} from given {@link User User}
+	     *
+	     * @param lists VocabularyList to use (currently only one) 
+	     */
+		@Override
+		protected String[] doInBackground(User... user) {
+			try {
+				user[0].getRemoteData();
+		        return user[0].getListsAsStrings();
+			}
+			catch (Exception e) { e.printStackTrace(); return null; }
+		}
+		
+		/** 
+	     * Takes end result from {@link doInBackground(User... user) doInBackground(...)} and updates
+	     * UI in main thread. Also dismisses {@link ProgressDialog ProgressDialog} when done.
+	     *
+	     * @param result Vocabularies array generated by main method
+	     */
+		@Override
+		protected void onPostExecute(String[] result) {
+			dismissDialog(DIALOG_LOADING_LISTS);
+			mAdapter = new ArrayAdapter<String>(getBaseContext(), R.layout.row, result);
+	        setListAdapter(mAdapter);
+	        mAdapter.notifyDataSetChanged();
+		}
+	}
 }
