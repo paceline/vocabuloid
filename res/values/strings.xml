@@ -6,7 +6,10 @@
 	<string name="quit">Exit</string>
     <string name="message_signed_out">You\'re now signed out.</string>
     <string name="message_signed_in">You\'re now signed in.</string>
+    <string name="message_no_conjugations">Seems like have no conjugation for this one. Sorry.</string>
     <string name="message_no_translations">Seems like have no translation for this one. Sorry.</string>
     <string name="message_no_vocabularies">Sorry. This list is either empty or a (currently unsupported) verb list.</string>
     <string name="message_offline">Sorry. You appear to be offline.</string>
+    <string name="message_tenses_title">Pick a tense</string>
+    <string name="message_tenses_infinitive">Infinitive</string>
 </resources>

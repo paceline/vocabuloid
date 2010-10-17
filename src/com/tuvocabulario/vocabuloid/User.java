@@ -2,14 +2,13 @@ package com.tuvocabulario.vocabuloid;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import android.content.Context;
 
 /**
  * Provides access to tuvocabulario.com User model. 
  *
  * @author Ulf Mšhring
- * @version 0.1
+ * @version 0.2
  */
 public class User extends RestClient {
 	
@@ -85,10 +84,13 @@ public class User extends RestClient {
 			for (int i=0;i<result.length();i++) {
 				JSONObject list = result.getJSONObject(i);
 				VocabularyList vocabularylist = new VocabularyList(mContext);
-				vocabularylist.setType(list.names().getString(0));
-				vocabularylist.setId(list.getJSONObject(vocabularylist.getType()).getInt("id"));
-				vocabularylist.setName(list.getJSONObject(vocabularylist.getType()).getString("name"));
-				vocabularylist.setSize(list.getJSONObject(vocabularylist.getType()).getInt("size"));
+				String root = list.names().getString(0);
+				vocabularylist.setId(list.getJSONObject(root).getInt("id"));
+				vocabularylist.setName(list.getJSONObject(root).getString("name"));
+				vocabularylist.setSize(list.getJSONObject(root).getInt("size"));
+				vocabularylist.setLanguageFromId(list.getJSONObject(root).getJSONObject("language_from").getInt("id"));
+				vocabularylist.setLanguageFromName(list.getJSONObject(root).getJSONObject("language_from").getString("word"));
+				vocabularylist.setType(root);
 				lists[i] = vocabularylist;
             }
 		}

@@ -23,7 +23,7 @@ import android.widget.ViewFlipper;
  * and displays them as flippable flash cards. 
  *
  * @author Ulf Mšhring
- * @version 0.1
+ * @version 0.2
  */
 public class Flashcard extends Activity {
 
@@ -49,8 +49,10 @@ public class Flashcard extends Activity {
     	setContentView(R.layout.flashcard);
     	int listId = this.getIntent().getExtras().getInt("com.tuvocabulario.vocabuloid.listId");
     	listSize = this.getIntent().getExtras().getInt("com.tuvocabulario.vocabuloid.listSize");
+    	int tenseId = this.getIntent().getExtras().getInt("com.tuvocabulario.vocabuloid.tenseId");
         VocabularyList list = new VocabularyList(this);
         list.setId(listId);
+        if (tenseId > 0) { list.setSelectedTense(tenseId); }
         new LoadVocabularies().execute(list);
     }
     
@@ -124,25 +126,25 @@ public class Flashcard extends Activity {
     /** 
      * Helper method: Called by {@link LoadVocabularies LoadVocabularies} task to render output as flash cards.
      *
-     * @param language Language of the vocabulary or translations
-     * @param word Formatted string, containing vocabulary or translations
+     * @param heading Language of the vocabulary, translations or conjugation
+     * @param text Formatted string, containing vocabulary, translations or conjugation
      */
-    private void renderFlashcard(String language, String word) {
+    private void renderFlashcard(String heading, String text) {
     	LinearLayout content = new LinearLayout(this);
     	content.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
     	content.setOrientation(LinearLayout.VERTICAL);
     	
-    	TextView languageLabel = new TextView(this);
-    	languageLabel.setGravity(Gravity.CENTER_HORIZONTAL);
-        languageLabel.setTextAppearance(this, R.style.FlashcardHeading);
-        languageLabel.setText(language);
-        content.addView(languageLabel, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    	TextView headingLabel = new TextView(this);
+    	headingLabel.setGravity(Gravity.CENTER_HORIZONTAL);
+        headingLabel.setTextAppearance(this, R.style.FlashcardHeading);
+        headingLabel.setText(heading);
+        content.addView(headingLabel, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         
-        TextView vocabularyLabel = new TextView(this);
-        vocabularyLabel.setGravity(Gravity.CENTER_HORIZONTAL);
-        vocabularyLabel.setTextAppearance(this, R.style.FlashcardFont);
-        vocabularyLabel.setText(word);
-        content.addView(vocabularyLabel, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        TextView textLabel = new TextView(this);
+        textLabel.setGravity(Gravity.CENTER_HORIZONTAL);
+        textLabel.setTextAppearance(this, R.style.FlashcardFont);
+        textLabel.setText(text);
+        content.addView(textLabel, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         
         mCardholder.addView(content, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
     }
@@ -204,7 +206,7 @@ public class Flashcard extends Activity {
      * their translations from tuvocabulario.com
      *
      * @author Ulf Mšhring
-     * @version 0.1
+     * @version 0.2
      */
  	class LoadVocabularies extends AsyncTask<VocabularyList, Integer, Hashtable<String,String>> {
  		
@@ -230,7 +232,7 @@ public class Flashcard extends Activity {
 				Hashtable<String,String> data = new Hashtable<String,String>();
 				Vocabulary[] vocabularies = list.getVocabularies();
 				for(int i=0; i<vocabularies.length; i++) {
-					data.put(vocabularies[i].getWord(), vocabularies[i].getTranslationsAsFormattedString(list.getLanguageToId()));
+					data.put(vocabularies[i].getWord(), vocabularies[i].getResultAsFormattedString(list.getSelector(), list.isVerbList()));
 					publishProgress(i);
 				}
 				return data;
@@ -260,8 +262,8 @@ public class Flashcard extends Activity {
 			mCardholder = (ViewFlipper)findViewById(R.id.cardholder);
 			for (Enumeration<String> e = result.keys() ; e.hasMoreElements() ;) {
 				String key = e.nextElement();
-				renderFlashcard(list.getLanguageFromName(), key);
-				renderFlashcard(list.getLanguageToName(), result.get(key));
+				renderFlashcard(list.getFrom(), key);
+				renderFlashcard(list.getTo(), result.get(key));
 		    }
 		}
 	}

@@ -1,6 +1,5 @@
 package com.tuvocabulario.vocabuloid;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -49,7 +48,7 @@ public abstract class RestClient {
      */
 	protected JSONArray getCollection(String path) {
 		HttpGet request = new HttpGet(mBaseUrl + path);
-		HttpClient httpclient = new DefaultHttpClient();
+		DefaultHttpClient httpclient = new DefaultHttpClient();
 		ResponseHandler<String> handler = new BasicResponseHandler();
 		try {
 			mConsumer.sign(request);
@@ -62,7 +61,7 @@ public abstract class RestClient {
 		catch (Exception e) { e.printStackTrace(); }
 		return null;
 	}
-	
+
 	/** 
      * Execute a GET request on an object
      *
@@ -70,7 +69,7 @@ public abstract class RestClient {
      */
 	protected JSONObject getObject(String path) {
 		HttpGet request = new HttpGet(mBaseUrl + path);
-		HttpClient httpclient = new DefaultHttpClient();
+		DefaultHttpClient httpclient = new DefaultHttpClient();
 		ResponseHandler<String> handler = new BasicResponseHandler();
 		try {
 			mConsumer.sign(request);

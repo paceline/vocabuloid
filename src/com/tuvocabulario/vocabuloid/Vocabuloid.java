@@ -1,5 +1,8 @@
 package com.tuvocabulario.vocabuloid;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 
@@ -13,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 /**
@@ -28,7 +33,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * service as JSON data back end. 
  *
  * @author Ulf Mšhring
- * @version 0.1
+ * @version 0.2
  */
 public class Vocabuloid extends ListActivity {
 	
@@ -46,6 +51,8 @@ public class Vocabuloid extends ListActivity {
 	private CommonsHttpOAuthProvider mProvider;
 	/** Global tuvocabulario.com user object (the root for all further requests) */
 	private User mUser;
+	/** Global selected vocabulary list */
+	VocabularyList mSelected;
 	/** Global ArrayAdapter object for handling the list of vocabulary lists */
 	private ArrayAdapter<String> mAdapter;
 	/** Progress dialog object */
@@ -110,7 +117,7 @@ public class Vocabuloid extends ListActivity {
 				mProgressDialog = new ProgressDialog(this);
 				mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				mProgressDialog.setMessage("Loading your lists...");
-				mProgressDialog.setCancelable(false);
+				mProgressDialog.setCancelable(true);
 				mProgressDialog.show();
 				return mProgressDialog;
 			default:
@@ -160,23 +167,56 @@ public class Vocabuloid extends ListActivity {
     
     /** 
      * Called when user selects a {@link VocabularyList VocabularyList} from {@link ListView ListView}. Kicks off
-     * {@link Flashcard Flashcard}, provided that selected {@link VocabularyList VocabularyList} a.) isn't empty and b.) isn't a
-     * verb list, which is not yet supported. 
+     * {@link Flashcard Flashcard}, provided that selected {@link VocabularyList VocabularyList} isn't empty.
      */
     private OnItemClickListener mListsListener = new OnItemClickListener() {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        	VocabularyList selected = mUser.getLists()[position];
-        	if (!isOnline() || selected.getSize() == 0 || selected.getType().endsWith("_verb_list")) {
+        	mSelected = mUser.getLists()[position];
+        	if (!isOnline() || mSelected.getSize() == 0) {
         		toast(R.string.message_no_vocabularies);
         	}
         	else {
-        		Intent i = new Intent(getBaseContext(), Flashcard.class);
-        		i.putExtra("com.tuvocabulario.vocabuloid.listId", selected.getId());
-        		i.putExtra("com.tuvocabulario.vocabuloid.listSize", selected.getSize());
-        		startActivityForResult(i, FLASHCARD);
+        		if (mSelected.isVerbList()) {
+        			ListView v = getListView();
+        			registerForContextMenu(v);
+                    v.showContextMenu();
+        		}
+        		else {
+        			Intent i = new Intent(getBaseContext(), Flashcard.class);
+        			i.putExtra("com.tuvocabulario.vocabuloid.listId", mSelected.getId());
+        			i.putExtra("com.tuvocabulario.vocabuloid.listSize", mSelected.getSize());
+        			startActivityForResult(i, FLASHCARD);
+        		}
         	}
         }
     };
+    
+    /** 
+     * Generate a context menu for picking a tense to view list in
+     */
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    	super.onCreateContextMenu(menu, v, menuInfo);
+    	Hashtable<Integer,String> tenses = mSelected.getTenses();
+    	menu.setHeaderTitle("Pick a tense");
+    	for (Enumeration<Integer> e = tenses.keys() ; e.hasMoreElements() ;) {
+			Integer key = e.nextElement();
+			menu.add(0, key, Menu.NONE, tenses.get(key));
+	    }
+    }
+    
+    /** 
+     * Run when user picks tense from context menu
+     */
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+    	Intent i = new Intent(getBaseContext(), Flashcard.class);
+		i.putExtra("com.tuvocabulario.vocabuloid.listId", mSelected.getId());
+		i.putExtra("com.tuvocabulario.vocabuloid.listSize", mSelected.getSize());
+		i.putExtra("com.tuvocabulario.vocabuloid.tenseId", item.getItemId());
+		startActivityForResult(i, FLASHCARD);
+    	return true;
+    }
     
     /** 
      * Helper method: Called by {@link onCreate(Bundle savedInstanceState) onCreate} to initialize or refresh list displaying all of the {@link User User's}
@@ -289,8 +329,10 @@ public class Vocabuloid extends ListActivity {
 	     */
 		@Override
 		protected void onPostExecute(String[] result) {
+			String[] returnvalue = new String[0];
 			dismissDialog(DIALOG_LOADING_LISTS);
-			mAdapter = new ArrayAdapter<String>(getBaseContext(), R.layout.row, result);
+			if (result != null) { returnvalue = result; }
+			mAdapter = new ArrayAdapter<String>(getBaseContext(), R.layout.row, returnvalue);
 	        setListAdapter(mAdapter);
 	        mAdapter.notifyDataSetChanged();
 		}
