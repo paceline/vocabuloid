@@ -239,6 +239,7 @@ public class Vocabuloid extends ListActivity {
      */
     private void initializeHandlers() {
     	String mBaseUrl = this.getString(R.string.base_url);
+    	
 		mConsumer = new CommonsHttpOAuthConsumer(this.getString(R.string.consumer_key), this.getString(R.string.consumer_secret));
 		mProvider = new CommonsHttpOAuthProvider(mBaseUrl + this.getString(R.string.request_token), mBaseUrl + this.getString(R.string.access_token), mBaseUrl + this.getString(R.string.authorize));
 	}

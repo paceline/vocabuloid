@@ -8,7 +8,7 @@ import android.content.Context;
  * Provides access to tuvocabulario.com Vocabulary model. 
  *
  * @author Ulf Mšhring
- * @version 0.2
+ * @version 0.3
  */
 public class Vocabulary extends RestClient {
 	
@@ -16,8 +16,6 @@ public class Vocabulary extends RestClient {
 	private int id;
 	/** Maps to word */
 	private String word;
-	/** Maps to gender */
-	private String gender;
 	/** Maps to type */
 	private String type;
 	/** Maps to language (field id) */
@@ -119,7 +117,7 @@ public class Vocabulary extends RestClient {
 				JSONObject remote_vocabulary = result.getJSONObject(i);
 				String root = remote_vocabulary.names().getString(0);
 				Vocabulary vocabulary = new Vocabulary(mContext);
-				vocabulary.initialize(remote_vocabulary.getJSONObject(root).getInt("id"), type, remote_vocabulary.getJSONObject(root).getString("word"), remote_vocabulary.getJSONObject(root).getString("gender"), remote_vocabulary.getJSONObject(root).getJSONObject("language").getInt("id"), remote_vocabulary.getJSONObject(root).getJSONObject("language").getString("word"));
+				vocabulary.initialize(remote_vocabulary.getJSONObject(root).getInt("id"), type, remote_vocabulary.getJSONObject(root).getString("word"), remote_vocabulary.getJSONObject(root).getJSONObject("language").getInt("id"), remote_vocabulary.getJSONObject(root).getJSONObject("language").getString("word"));
 				translations[i] = vocabulary;
 			}
 		}
@@ -132,25 +130,20 @@ public class Vocabulary extends RestClient {
      * @param id id Field
      * @param type type Field
      * @param word word Field
-     * @param gender gender Field
      * @param languageId language_id Field
      * @param languageName language_name Field
      */
-	public void initialize(int id, String type, String word, String gender, int languageId, String languageName) {
+	public void initialize(int id, String type, String word, int languageId, String languageName) {
 		this.id = id;
 		this.type = type;
 		this.word = word;
-		this.gender = gender;
 		this.languageName = languageName;
 		this.languageId = languageId;
 	}
 
 	public int getId() { return id; }
 	
-	public String getWord() {
-		if (!gender.equals("N/A")) { return gender + " " + word; }
-		return word;
-	}
+	public String getWord() { return word; }
 	
 	public String getType() { return type; }
 	

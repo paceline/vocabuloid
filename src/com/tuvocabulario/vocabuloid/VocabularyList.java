@@ -93,7 +93,7 @@ public class VocabularyList extends RestClient {
 			for (int i=0;i<result.length();i++) {
 				JSONObject remote_vocabulary = result.getJSONObject(i);
 				Vocabulary vocabulary = new Vocabulary(mContext);
-				vocabulary.initialize(remote_vocabulary.getInt("id"), "Vocabulary", remote_vocabulary.getString("word"), remote_vocabulary.getString("gender"), root.getJSONObject("language_from").getInt("id"), root.getJSONObject("language_from").getString("word"));
+				vocabulary.initialize(remote_vocabulary.getInt("id"), "Vocabulary", remote_vocabulary.getString("word"), root.getJSONObject("language_from").getInt("id"), root.getJSONObject("language_from").getString("word"));
 				vocabularies[i] = vocabulary;
             }
 		}
