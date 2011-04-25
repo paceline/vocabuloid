@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="base_url">http://tuvocabulario.com</string>
+	<string name="base_url">http://vocabulario.me</string>
 	<string name="request_token">/oauth/request_token</string>
 	<string name="access_token">/oauth/access_token</string>
 	<string name="authorize">/oauth/authorize</string>
-	<string name="consumer_key">96PQ7uxLf2OJsmxC54nmM7o9BTikl7vTE6KVSPRi</string>
-	<string name="consumer_secret">FNINVR1bzMnIOb69LaZk0uPqwM7Bfl9P8z6o5JcK</string>
+	<string name="consumer_key">rPzLq27iVxhsysktMSBcTa59M15p5UY6HpG44nRU</string>
+	<string name="consumer_secret">BX4zEg8VLi9yr7f0io8IJw6dYSOMEDZikYkQXuHm</string>
 </resources>
