@@ -1,7 +1,10 @@
-package com.tuvocabulario.vocabuloid;
+package me.vocabulario.vocabuloid;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import me.vocabulario.vocabuloid.R;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -23,7 +26,7 @@ import android.widget.ViewFlipper;
  * and displays them as flippable flash cards. 
  *
  * @author Ulf Mšhring
- * @version 0.2
+ * @version 0.3
  */
 public class Flashcard extends Activity {
 
@@ -47,9 +50,9 @@ public class Flashcard extends Activity {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.flashcard);
-    	int listId = this.getIntent().getExtras().getInt("com.tuvocabulario.vocabuloid.listId");
-    	listSize = this.getIntent().getExtras().getInt("com.tuvocabulario.vocabuloid.listSize");
-    	int tenseId = this.getIntent().getExtras().getInt("com.tuvocabulario.vocabuloid.tenseId");
+    	int listId = this.getIntent().getExtras().getInt("me.vocabulario.vocabuloid.listId");
+    	listSize = this.getIntent().getExtras().getInt("me.vocabulario.vocabuloid.listSize");
+    	int tenseId = this.getIntent().getExtras().getInt("me.vocabulario.vocabuloid.tenseId");
         VocabularyList list = new VocabularyList(this);
         list.setId(listId);
         if (tenseId > 0) { list.setSelectedTense(tenseId); }
@@ -67,11 +70,9 @@ public class Flashcard extends Activity {
 		switch (id) {
 			case DIALOG_LOADING_VOCABULARIES:
 				mProgressDialog = new ProgressDialog(this);
-				mProgressDialog.setProgressDrawable(getResources().getDrawable(R.drawable.progress));
-				mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-				mProgressDialog.setMessage("Loading vocabularies...");
+				mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				mProgressDialog.setMessage(this.getString(R.string.message_dialog_loading_vocabularies));
 				mProgressDialog.setCancelable(true);
-				mProgressDialog.setMax(listSize);
 				mProgressDialog.show();
 				return mProgressDialog;
 			default:
@@ -129,10 +130,17 @@ public class Flashcard extends Activity {
      * @param heading Language of the vocabulary, translations or conjugation
      * @param text Formatted string, containing vocabulary, translations or conjugation
      */
-    private void renderFlashcard(String heading, String text) {
+    private void renderFlashcard(String heading, String text, String page) {
     	LinearLayout content = new LinearLayout(this);
-    	content.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+    	content.setGravity(Gravity.FILL_VERTICAL | Gravity.CENTER_HORIZONTAL);
     	content.setOrientation(LinearLayout.VERTICAL);
+
+    	TextView pageLabel = new TextView(this);
+    	pageLabel.setGravity(Gravity.RIGHT);
+    	pageLabel.setPadding(0, 10, 20, 75);
+    	pageLabel.setTextAppearance(this, R.style.FlashcardPageNumber);
+        pageLabel.setText(page);
+        content.addView(pageLabel, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     	
     	TextView headingLabel = new TextView(this);
     	headingLabel.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -208,7 +216,7 @@ public class Flashcard extends Activity {
      * @author Ulf Mšhring
      * @version 0.2
      */
- 	class LoadVocabularies extends AsyncTask<VocabularyList, Integer, Hashtable<String,String>> {
+ 	class LoadVocabularies extends AsyncTask<VocabularyList, Void, Hashtable<String,String>> {
  		
  		/** List to flash cards out of  */
  		private VocabularyList list;
@@ -233,22 +241,11 @@ public class Flashcard extends Activity {
 				Vocabulary[] vocabularies = list.getVocabularies();
 				for(int i=0; i<vocabularies.length; i++) {
 					data.put(vocabularies[i].getWord(), vocabularies[i].getResultAsFormattedString(list.getSelector(), list.isVerbList()));
-					publishProgress(i);
 				}
 				return data;
 			}
 			catch (Exception e) { e.printStackTrace(); return null; }
 		}
-		
-		/** 
-	     * Regularly feedback progress to {@link ProgressDialog ProgressDialog}
-	     *
-	     * @param progress Index of Vocabulary just processed
-	     */
-		@Override
-		protected void onProgressUpdate(Integer... progress) {
-			mProgressDialog.setProgress(progress[0]);
-	    }
 		
 		/** 
 	     * Takes end result from {@link doInBackground(VocabularyList... lists) doInBackground(...)} and updates
@@ -260,10 +257,12 @@ public class Flashcard extends Activity {
 		protected void onPostExecute(Hashtable<String,String> result) {
 			dismissDialog(DIALOG_LOADING_VOCABULARIES);
 			mCardholder = (ViewFlipper)findViewById(R.id.cardholder);
+			int i = 1;
 			for (Enumeration<String> e = result.keys() ; e.hasMoreElements() ;) {
 				String key = e.nextElement();
-				renderFlashcard(list.getFrom(), key);
-				renderFlashcard(list.getTo(), result.get(key));
+				renderFlashcard(list.getFrom(), key, i + "/" + result.size());
+				renderFlashcard(list.getTo(), result.get(key), i + "/" + result.size());
+				i++;
 		    }
 		}
 	}

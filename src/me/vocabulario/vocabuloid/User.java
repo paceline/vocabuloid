@@ -1,4 +1,4 @@
-package com.tuvocabulario.vocabuloid;
+package me.vocabulario.vocabuloid;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -8,7 +8,7 @@ import android.content.Context;
  * Provides access to tuvocabulario.com User model. 
  *
  * @author Ulf Mšhring
- * @version 0.2
+ * @version 0.3
  */
 public class User extends RestClient {
 	

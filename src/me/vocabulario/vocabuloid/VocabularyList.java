@@ -1,15 +1,18 @@
-package com.tuvocabulario.vocabuloid;
+package me.vocabulario.vocabuloid;
 
 import java.util.Hashtable;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import me.vocabulario.vocabuloid.R;
+
 import android.content.Context;
 
 /**
  * Provides access to tuvocabulario.com VocabularyList model. 
  *
  * @author Ulf Mšhring
- * @version 0.2
+ * @version 0.3
  */
 public class VocabularyList extends RestClient {
 	
@@ -94,6 +97,12 @@ public class VocabularyList extends RestClient {
 				JSONObject remote_vocabulary = result.getJSONObject(i);
 				Vocabulary vocabulary = new Vocabulary(mContext);
 				vocabulary.initialize(remote_vocabulary.getInt("id"), "Vocabulary", remote_vocabulary.getString("word"), root.getJSONObject("language_from").getInt("id"), root.getJSONObject("language_from").getString("word"));
+				if (isVerbList()) {
+					vocabulary.setConjugations(remote_vocabulary.getJSONArray("conjugations"));
+				}
+				else {
+					vocabulary.setTranslations(remote_vocabulary.getJSONArray("translation"));
+				}
 				vocabularies[i] = vocabulary;
             }
 		}

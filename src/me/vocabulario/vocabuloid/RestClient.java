@@ -1,4 +1,4 @@
-package com.tuvocabulario.vocabuloid;
+package me.vocabulario.vocabuloid;
 
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -6,6 +6,8 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import me.vocabulario.vocabuloid.R;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,7 +17,7 @@ import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
  * Abstract base class for communicating with the tuvocabulario.com web service. 
  *
  * @author Ulf Mšhring
- * @version 0.1
+ * @version 0.3
  */
 public abstract class RestClient {
 

@@ -1,7 +1,9 @@
-package com.tuvocabulario.vocabuloid;
+package me.vocabulario.vocabuloid;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import me.vocabulario.vocabuloid.R;
 
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
@@ -33,7 +35,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * service as JSON data back end. 
  *
  * @author Ulf Mšhring
- * @version 0.2
+ * @version 0.3
  */
 public class Vocabuloid extends ListActivity {
 	
@@ -116,7 +118,7 @@ public class Vocabuloid extends ListActivity {
 			case DIALOG_LOADING_LISTS:
 				mProgressDialog = new ProgressDialog(this);
 				mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				mProgressDialog.setMessage("Loading your lists...");
+				mProgressDialog.setMessage(this.getString(R.string.message_dialog_loading_lists));
 				mProgressDialog.setCancelable(true);
 				mProgressDialog.show();
 				return mProgressDialog;
@@ -183,8 +185,8 @@ public class Vocabuloid extends ListActivity {
         		}
         		else {
         			Intent i = new Intent(getBaseContext(), Flashcard.class);
-        			i.putExtra("com.tuvocabulario.vocabuloid.listId", mSelected.getId());
-        			i.putExtra("com.tuvocabulario.vocabuloid.listSize", mSelected.getSize());
+        			i.putExtra("me.vocabulario.vocabuloid.listId", mSelected.getId());
+        			i.putExtra("me.vocabulario.vocabuloid.listSize", mSelected.getSize());
         			startActivityForResult(i, FLASHCARD);
         		}
         	}
@@ -211,9 +213,9 @@ public class Vocabuloid extends ListActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
     	Intent i = new Intent(getBaseContext(), Flashcard.class);
-		i.putExtra("com.tuvocabulario.vocabuloid.listId", mSelected.getId());
-		i.putExtra("com.tuvocabulario.vocabuloid.listSize", mSelected.getSize());
-		i.putExtra("com.tuvocabulario.vocabuloid.tenseId", item.getItemId());
+		i.putExtra("me.vocabulario.vocabuloid.listId", mSelected.getId());
+		i.putExtra("me.vocabulario.vocabuloid.listSize", mSelected.getSize());
+		i.putExtra("me.vocabulario.vocabuloid.tenseId", item.getItemId());
 		startActivityForResult(i, FLASHCARD);
     	return true;
     }

@@ -1,7 +1,9 @@
-package com.tuvocabulario.vocabuloid;
+package me.vocabulario.vocabuloid;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import me.vocabulario.vocabuloid.R;
 import android.content.Context;
 
 /**
@@ -10,8 +12,10 @@ import android.content.Context;
  * @author Ulf Mšhring
  * @version 0.3
  */
-public class Vocabulary extends RestClient {
+public class Vocabulary {
 	
+	/** Context shared across application */
+	protected Context mContext;
 	/** Maps to id */
 	private int id;
 	/** Maps to word */
@@ -33,7 +37,7 @@ public class Vocabulary extends RestClient {
      * @param ctx Context needed for assessing shared resources
      */
 	public Vocabulary(Context context) {
-		super(context);
+		mContext = context;
 	}
 	
 	/** 
@@ -55,7 +59,6 @@ public class Vocabulary extends RestClient {
      * @param languageId ID of language the translations should be in
      */
 	public String getConjugationsAsFormattedString(int tenseId) {
-		if (conjugation == null) { getRemoteConjugation(tenseId); }
 		if (conjugation != null && conjugation.length > 0) {
 			String result = "";
 			for (String word : conjugation) {
@@ -69,12 +72,27 @@ public class Vocabulary extends RestClient {
 	}
 	
 	/** 
+     *  Load translations for self from passed JSONArray
+     *
+     * @param result JSONArray with translation data
+     */
+	public void setConjugations(JSONArray result) {
+		try {
+			conjugation = new String[result.length()];
+			for (int i=0;i<result.length();i++) {
+				JSONObject remote_conjugation = result.getJSONObject(i);
+				conjugation[i] = remote_conjugation.getString("person").split("/")[0] + " - " + remote_conjugation.getString("verb");
+			}
+		}
+		catch (Exception e) { e.printStackTrace(); }
+	}
+	
+	/** 
      *  Returns a formatted String with all translations (as words)
      *
      * @param languageId ID of language the translations should be in
      */
 	public String getTranslationsAsFormattedString(int languageId) {
-		if (translations == null) { getRemoteTranslations(languageId); }
 		if (translations != null && translations.length > 0) {
 			String result = "";
 			for (Vocabulary vocabulary : translations) {
@@ -88,36 +106,17 @@ public class Vocabulary extends RestClient {
 	}
 	
 	/** 
-     *  Fetches conjugation from the server
+     *  Load translations for self from passed JSONArray
      *
-     * @param tenseId ID of tense the conjugation should be in
+     * @param result JSONArray with translation data
      */
-	protected void getRemoteConjugation(int tenseId) {
+	public void setTranslations(JSONArray result) {
 		try {
-			JSONArray result = getCollection("/vocabularies/" + id + "/conjugate.json?tense_id=" + tenseId);
-			conjugation = new String[result.length()];
-			for (int i=0;i<result.length();i++) {
-				JSONObject remote_conjugation = result.getJSONObject(i);
-				conjugation[i] = remote_conjugation.getString("person").split("/")[0] + " - " + remote_conjugation.getString("verb");
-			}
-		}
-		catch (Exception e) { e.printStackTrace(); }
-	}
-	
-	/** 
-     *  Fetches new translations from the server
-     *
-     * @param languageId ID of language the translations should be in
-     */
-	protected void getRemoteTranslations(int languageId) {
-		try {
-			JSONArray result = getCollection("/vocabularies/" + id + "/translate.json?language_id=" + languageId);
 			translations = new Vocabulary[result.length()];
 			for (int i=0;i<result.length();i++) {
 				JSONObject remote_vocabulary = result.getJSONObject(i);
-				String root = remote_vocabulary.names().getString(0);
 				Vocabulary vocabulary = new Vocabulary(mContext);
-				vocabulary.initialize(remote_vocabulary.getJSONObject(root).getInt("id"), type, remote_vocabulary.getJSONObject(root).getString("word"), remote_vocabulary.getJSONObject(root).getJSONObject("language").getInt("id"), remote_vocabulary.getJSONObject(root).getJSONObject("language").getString("word"));
+				vocabulary.initialize(remote_vocabulary.getInt("id"), type, remote_vocabulary.getString("word"), remote_vocabulary.getJSONObject("language").getInt("id"), remote_vocabulary.getJSONObject("language").getString("word"));
 				translations[i] = vocabulary;
 			}
 		}
