@@ -18,6 +18,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,10 +32,10 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 /**
- * Vocabuloid is a simple flash card application for Android-based mobile phones. It uses the tuvocabulario.com
+ * Vocabuloid is a simple flash card application for Android-based mobile phones. It uses the vocabulario.me
  * service as JSON data back end. 
  *
- * @author Ulf Mšhring
+ * @author Ulf Moehring
  * @version 0.3
  */
 public class Vocabuloid extends ListActivity {
@@ -51,7 +52,7 @@ public class Vocabuloid extends ListActivity {
 	private CommonsHttpOAuthConsumer mConsumer;
 	/** Provider for issuing OAuth requests to web service */
 	private CommonsHttpOAuthProvider mProvider;
-	/** Global tuvocabulario.com user object (the root for all further requests) */
+	/** Global vocabulario.me user object (the root for all further requests) */
 	private User mUser;
 	/** Global selected vocabulary list */
 	VocabularyList mSelected;
@@ -68,6 +69,8 @@ public class Vocabuloid extends ListActivity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mSettings = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
@@ -237,7 +240,7 @@ public class Vocabuloid extends ListActivity {
     }
     
     /** 
-     * Helper method: Initializes the OAuth consumer and provider objects to talk with tuvocabulario.com web service
+     * Helper method: Initializes the OAuth consumer and provider objects to talk with vocabulario.me web service
      */
     private void initializeHandlers() {
     	String mBaseUrl = this.getString(R.string.base_url);
@@ -296,9 +299,9 @@ public class Vocabuloid extends ListActivity {
     
     /**
      * Asynchronous task used by {@link Vocabuloid Vocabuloid} to execute the lengthy task of loading lists
-     * from tuvocabulario.com
+     * from vocabulario.me
      *
-     * @author Ulf Mšhring
+     * @author Ulf Moehring
      * @version 0.1
      */
  	class LoadLists extends AsyncTask<User, Void, String[]> {

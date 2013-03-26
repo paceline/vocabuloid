@@ -2,4 +2,5 @@
 bin/*
 bin/*/*/*/*
 gen/*/*/*/*
-lib/*
+libs/*
+/bin

@@ -14,9 +14,9 @@ import android.content.SharedPreferences;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 
 /**
- * Abstract base class for communicating with the tuvocabulario.com web service. 
+ * Abstract base class for communicating with the vocabulario.me web service. 
  *
- * @author Ulf Mšhring
+ * @author Ulf Moehring
  * @version 0.3
  */
 public abstract class RestClient {

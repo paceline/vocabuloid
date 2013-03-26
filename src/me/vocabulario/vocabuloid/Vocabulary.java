@@ -7,9 +7,9 @@ import me.vocabulario.vocabuloid.R;
 import android.content.Context;
 
 /**
- * Provides access to tuvocabulario.com Vocabulary model. 
+ * Provides access to vocabulario.me Vocabulary model. 
  *
- * @author Ulf Mšhring
+ * @author Ulf Moehring
  * @version 0.3
  */
 public class Vocabulary {

@@ -5,9 +5,9 @@ import org.json.JSONObject;
 import android.content.Context;
 
 /**
- * Provides access to tuvocabulario.com User model. 
+ * Provides access to vocabulario.me User model. 
  *
- * @author Ulf Mšhring
+ * @author Ulf Moehring
  * @version 0.3
  */
 public class User extends RestClient {

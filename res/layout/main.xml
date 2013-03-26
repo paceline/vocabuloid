@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
 	android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 	<ListView android:id="@+id/android:list"
@@ -13,6 +14,6 @@
 		style="@style/CodeFont"
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
-    	android:text="No lists available. This could be could be because\n\na.) You\'re not online\n\nb.) You\'re not signed in\n\nc.) You don\'t have any lists at tuvocabulario.com">
+    	android:text="No lists available. This could be could be because\n\na.) You\'re not online\n\nb.) You\'re not signed in\n\nc.) You don\'t have any lists at vocabulario.me">
 	</TextView>
 </LinearLayout>

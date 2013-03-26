@@ -22,10 +22,10 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 /**
- * Flashcard is the heart of the Vocabuloid application. It loads vocabularies and their translations from tuvocabulario.com
+ * Flashcard is the heart of the Vocabuloid application. It loads vocabularies and their translations from vocabulario.me
  * and displays them as flippable flash cards. 
  *
- * @author Ulf Mšhring
+ * @author Ulf Moehring
  * @version 0.3
  */
 public class Flashcard extends Activity {
@@ -211,9 +211,9 @@ public class Flashcard extends Activity {
     
     /**
      * Asynchronous task used by {@link Flashcard Flashcard} to execute the lengthy task of loading vocabularies and
-     * their translations from tuvocabulario.com
+     * their translations from vocabulario.me
      *
-     * @author Ulf Mšhring
+     * @author Ulf Moehring
      * @version 0.2
      */
  	class LoadVocabularies extends AsyncTask<VocabularyList, Void, Hashtable<String,String>> {
